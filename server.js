@@ -45,8 +45,8 @@ app.get('/hello', (request, response) => {
 app.get('/weather', (request, response, next) => {
   try {
     let searchQuery = request.query.searchQuery;
-    let lat = request.query.lat;
-    let lon = request.query.lon;
+    // let lat = request.query.lat;
+    // let lon = request.query.lon;
 
     let dataToGroom = data.find(e => e.city_name === searchQuery);
     let dataToSend = new Forecast(dataToGroom);
@@ -62,8 +62,8 @@ app.get('/weather', (request, response, next) => {
 
 class Forecast {
   constructor(searchObj) {
-    this.date = data.data.valid_date;
-    this.description = data.data.app_max_temp.weather.description;
+    this.date = searchObj.data[0].datetime;
+    this.description = searchObj.data[0].weather.description;
   }
 }
 
