@@ -62,7 +62,7 @@ app.get('/weather', async (request, response, next) => {
   }
 });
 
-app.get('/movies', async (request,response,next) => {
+app.get('/movies', async (request, response, next) => {
   try {
 
     let searchQuery = request.query.searchQuery;
@@ -71,7 +71,7 @@ app.get('/movies', async (request,response,next) => {
 
     let dataToGroom = await axios.get(url);
 
-    let movieData = dataToGroom.data.map(e => new Movies(e));
+    let movieData = dataToGroom.data.results.map(e => new Movies(e));
 
     response.status(200).send(movieData);
 
@@ -85,8 +85,8 @@ app.get('/movies', async (request,response,next) => {
 
 class Movies {
   constructor(city) {
-    this.title = city.results.original_title;
-    this.overview = city.results.overview;
+    this.title = city.original_title;
+    this.overview = city.overview;
   }
 }
 
