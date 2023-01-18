@@ -62,7 +62,26 @@ app.get('/weather', async (request, response, next) => {
   }
 });
 
+app.get('/movies', async (request,response,next) => {
+  try {
+
+    let searchQuery = request.query.searchQuery;
+
+    let url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&language=en-US&page=1&include_adult=false&query=${searchQuery}`;
+
+    let dataToGroom = await axios.get(url);
+
+    response.status(200).send(dataToGroom.data);
+
+
+  } catch (error) {
+    next(error);
+  }
+});
+
 // **** CLASS TO GROOM BULKY DATA ****
+
+
 
 class Forecast {
   constructor(searchObj) {
