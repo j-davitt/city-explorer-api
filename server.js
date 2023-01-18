@@ -49,14 +49,11 @@ app.get('/weather', async (request, response, next) => {
     let lat = request.query.lat;
     let lon = request.query.lon;
 
-    // let dataToGroom = data.find(e => e.city_name === searchQuery);
-
-    let url = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHERBIT_API_KEY}&lat=${lat}&lon=${lon}&days=5&units=I`;
+    let url = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}&days=5&units=I`;
 
     let dataToGroom = await axios.get(url);
 
     let weatherData = dataToGroom.data.data.map(e => new Forecast(e));
-
 
     response.status(200).send(weatherData);
 
