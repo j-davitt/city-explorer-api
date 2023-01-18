@@ -9,6 +9,7 @@ require('dotenv').config();
 const cors = require('cors');
 const { response } = require('express');
 let data = require('./data/weather.json');
+const axios = require('axios');
 
 
 // **** Once express is in we need to use it - per express docs
