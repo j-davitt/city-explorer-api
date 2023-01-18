@@ -87,6 +87,7 @@ class Movies {
   constructor(city) {
     this.title = city.original_title;
     this.overview = city.overview;
+    this.poster = `https://image.tmdb.org/t/p/w500/${city.poster_path}`;
   }
 }
 
