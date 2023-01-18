@@ -45,13 +45,18 @@ app.get('/hello', (request, response) => {
 app.get('/weather', (request, response, next) => {
   try {
     let searchQuery = request.query.searchQuery;
-    // let lat = request.query.lat;
-    // let lon = request.query.lon;
+    let lat = request.query.lat;
+    let lon = request.query.lon;
 
     let dataToGroom = data.find(e => e.city_name === searchQuery);
-    let dataToSend = new Forecast(dataToGroom);
+    let newArr = [];
+    for (let i = 0; i < dataToGroom.data.length; i++) {
+      newArr.push(new Forecast(dataToGroom.data[i]));
+    }
 
-    response.status(200).send(dataToSend);
+    // let dataToSend = new Forecast(dataToGroom);
+
+    response.status(200).send(newArr);
 
   } catch (error) {
     next(error);
@@ -59,11 +64,13 @@ app.get('/weather', (request, response, next) => {
 });
 
 // **** CLASS TO GROOM BULKY DATA ****
-
+// TODO: 1 
 class Forecast {
   constructor(searchObj) {
-    this.date = searchObj.data[0].datetime;
-    this.description = searchObj.data[0].weather.description;
+    this.date = searchObj.datetime;
+    this.description = searchObj.weather.description;
+    this.lowTemp = searchObj.low_temp;
+    this.maxTemp = searchObj.max_temp;
   }
 }
 
