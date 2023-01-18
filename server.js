@@ -71,7 +71,9 @@ app.get('/movies', async (request,response,next) => {
 
     let dataToGroom = await axios.get(url);
 
-    response.status(200).send(dataToGroom.data);
+    let movieData = dataToGroom.data.map(e => new Movies(e));
+
+    response.status(200).send(movieData);
 
 
   } catch (error) {
@@ -81,7 +83,12 @@ app.get('/movies', async (request,response,next) => {
 
 // **** CLASS TO GROOM BULKY DATA ****
 
-
+class Movies {
+  constructor(city) {
+    this.title = city.results.original_title;
+    this.overview = city.results.overview;
+  }
+}
 
 class Forecast {
   constructor(searchObj) {
