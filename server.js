@@ -43,21 +43,20 @@ app.get('/hello', (request, response) => {
   response.status(200).send(`Hello ${firstName} ${lastName}! Welcome to my server!`);
 });
 
-app.get('/weather', (request, response, next) => {
+app.get('/weather', async (request, response, next) => {
   try {
     let searchQuery = request.query.searchQuery;
     let lat = request.query.lat;
     let lon = request.query.lon;
 
-    let dataToGroom = data.find(e => e.city_name === searchQuery);
+    // let dataToGroom = data.find(e => e.city_name === searchQuery);
 
-    let weatherData = dataToGroom.data.map(e => new Forecast(e));
+    let url = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHERBIT_API_KEY}&lat=${lat}&lon=${lon}&days=5&units=I`;
 
+    let dataToGroom = await axios.get(url);
 
-    // let newArr = [];
-    // for (let i = 0; i < dataToGroom.data.length; i++) {
-    //   newArr.push(new Forecast(dataToGroom.data[i]));
-    // }
+    let weatherData = dataToGroom.data.data.map(e => new Forecast(e));
+
 
     response.status(200).send(weatherData);
 
