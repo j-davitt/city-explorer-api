@@ -9,6 +9,7 @@ require('dotenv').config();
 const cors = require('cors');
 const { response } = require('express');
 let data = require('./data/weather.json');
+const axios = require('axios');
 
 
 // **** Once express is in we need to use it - per express docs
@@ -42,21 +43,17 @@ app.get('/hello', (request, response) => {
   response.status(200).send(`Hello ${firstName} ${lastName}! Welcome to my server!`);
 });
 
-app.get('/weather', (request, response, next) => {
+app.get('/weather', async (request, response, next) => {
   try {
     let searchQuery = request.query.searchQuery;
     let lat = request.query.lat;
     let lon = request.query.lon;
 
-    let dataToGroom = data.find(e => e.city_name === searchQuery);
+    let url = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}&days=5&units=I`;
 
-    let weatherData = dataToGroom.data.map(e => new Forecast(e));
+    let dataToGroom = await axios.get(url);
 
-
-    // let newArr = [];
-    // for (let i = 0; i < dataToGroom.data.length; i++) {
-    //   newArr.push(new Forecast(dataToGroom.data[i]));
-    // }
+    let weatherData = dataToGroom.data.data.map(e => new Forecast(e));
 
     response.status(200).send(weatherData);
 
@@ -65,7 +62,34 @@ app.get('/weather', (request, response, next) => {
   }
 });
 
+app.get('/movies', async (request, response, next) => {
+  try {
+
+    let searchQuery = request.query.searchQuery;
+
+    let url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&language=en-US&page=1&include_adult=false&query=${searchQuery}`;
+
+    let dataToGroom = await axios.get(url);
+
+    let movieData = dataToGroom.data.results.map(e => new Movies(e));
+
+    response.status(200).send(movieData);
+
+
+  } catch (error) {
+    next(error);
+  }
+});
+
 // **** CLASS TO GROOM BULKY DATA ****
+
+class Movies {
+  constructor(city) {
+    this.title = city.original_title;
+    this.overview = city.overview;
+    this.poster = `https://image.tmdb.org/t/p/w500/${city.poster_path}`;
+  }
+}
 
 class Forecast {
   constructor(searchObj) {
