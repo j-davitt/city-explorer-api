@@ -7,9 +7,8 @@ console.log('1st server');
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
-const { response } = require('express');
-let data = require('./data/weather.json');
-const axios = require('axios');
+const getWeather = require('./modules/weather.js');
+const getMovies = require('./modules/movies.js');
 
 
 // **** Once express is in we need to use it - per express docs
@@ -43,62 +42,12 @@ app.get('/hello', (request, response) => {
   response.status(200).send(`Hello ${firstName} ${lastName}! Welcome to my server!`);
 });
 
-app.get('/weather', async (request, response, next) => {
-  try {
-    let searchQuery = request.query.searchQuery;
-    let lat = request.query.lat;
-    let lon = request.query.lon;
 
-    let url = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}&days=5&units=I`;
+app.get('/weather', getWeather);
 
-    let dataToGroom = await axios.get(url);
-
-    let weatherData = dataToGroom.data.data.map(e => new Forecast(e));
-
-    response.status(200).send(weatherData);
-
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.get('/movies', async (request, response, next) => {
-  try {
-
-    let searchQuery = request.query.searchQuery;
-
-    let url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&language=en-US&page=1&include_adult=false&query=${searchQuery}`;
-
-    let dataToGroom = await axios.get(url);
-
-    let movieData = dataToGroom.data.results.map(e => new Movies(e));
-
-    response.status(200).send(movieData);
+app.get('/movies', getMovies);
 
 
-  } catch (error) {
-    next(error);
-  }
-});
-
-// **** CLASS TO GROOM BULKY DATA ****
-
-class Movies {
-  constructor(city) {
-    this.title = city.original_title;
-    this.overview = city.overview;
-    this.poster = `https://image.tmdb.org/t/p/w500/${city.poster_path}`;
-  }
-}
-
-class Forecast {
-  constructor(searchObj) {
-    this.date = searchObj.datetime;
-    this.description = searchObj.weather.description;
-    this.lowTemp = searchObj.low_temp;
-    this.maxTemp = searchObj.max_temp;
-  }
-}
 
 // **** CATCH ALL ENDPOINT - NEEDS TO BE LAST DEFINED ENDPOINT ****
 
